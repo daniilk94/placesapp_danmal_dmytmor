@@ -1,5 +1,6 @@
 import type { CSSProperties } from 'react';
 import type { PlacesProps } from '../interfaces.ts';
+import ListElement from './ListElement.tsx';
 
 const ListOfPlaces = ({ places }: PlacesProps) => {
     const listStyle: CSSProperties = {
@@ -10,13 +11,12 @@ const ListOfPlaces = ({ places }: PlacesProps) => {
         margin: 0,
         padding: '16px',
         boxSizing: 'border-box',
+        listStyle: 'none',
     };
     return (
         <ul style={listStyle}>
             {places.map((p) => (
-                <li key={p.ID}>
-                    {p.Name} ({p.Latitude.toFixed(4)}, {p.Longitude.toFixed(4)})
-                </li>
+                <ListElement key={p.ID} name={p.Name} />
             ))}
         </ul>
     );

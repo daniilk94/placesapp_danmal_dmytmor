@@ -15,7 +15,11 @@ const Map = ({ places }: PlacesProps) => {
             />
             {places.map((p) => (
                 <Marker key={p.ID} position={[p.Latitude, p.Longitude]}>
-                    <Popup>{p.Name}</Popup>
+                    <Popup>
+                        {p.Name}
+                        {<br />}({p.Latitude.toFixed(4)},{' '}
+                        {p.Longitude.toFixed(4)})
+                    </Popup>
                 </Marker>
             ))}
         </MapContainer>

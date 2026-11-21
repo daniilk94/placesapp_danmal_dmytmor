@@ -1,5 +1,5 @@
 import type { Place } from '../../backend/src/types';
 
-export interface PlacesProps {
+export type PlacesProps = {
     places: Place[];
-}
+};
