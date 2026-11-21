@@ -1,14 +1,7 @@
 import { useState, useEffect } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import type { Place } from '../../backend/src/types';
 import 'leaflet/dist/leaflet.css';
-
-type Place = {
-    ID: number;
-    Name: string;
-    Latitude: number;
-    Longitude: number;
-    UserID: number;
-};
+import MainDisplay from './components/MainDisplay';
 
 const App = () => {
     const [places, setPlaces] = useState<Place[]>([]);
@@ -25,31 +18,9 @@ const App = () => {
     }, []);
 
     return (
-        <>
-            <ul>
-                {places.map((p) => (
-                    <li key={p.ID}>
-                        {p.Name} ({p.Latitude.toFixed(4)},{' '}
-                        {p.Longitude.toFixed(4)})
-                    </li>
-                ))}
-            </ul>
-            <MapContainer
-                style={{ height: '400px' }}
-                center={[62.59, 29.77]}
-                zoom={13}
-            >
-                <TileLayer
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                />
-                {places.map((p) => (
-                    <Marker key={p.ID} position={[p.Latitude, p.Longitude]}>
-                        <Popup>{p.Name}</Popup>
-                    </Marker>
-                ))}
-            </MapContainer>
-        </>
+        <div>
+            <MainDisplay places={places} />
+        </div>
     );
 };
 

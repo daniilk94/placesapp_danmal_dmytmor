@@ -101,7 +101,7 @@ export function getPool(): maria.Pool {
   return pool;
 }
 
-async function sendQuery<T>(sql: string, params?: any[]): Promise<T[]> {
+async function sendQuery<T>(sql: string, params?: any[]): Promise<T> {
   let connection: maria.PoolConnection | null = null;
 
   try {
