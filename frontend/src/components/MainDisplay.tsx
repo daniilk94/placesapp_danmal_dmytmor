@@ -1,11 +1,17 @@
 import ListOfPlaces from './ListOfPlaces';
 import MapComponent from './MapComponent';
 import { useAuth } from "../utils/useAuth";
+import { useState, useEffect } from 'react';
 import type { PlacesProps } from '../interfaces.ts';
 import type { CSSProperties } from 'react';
+import AuthWindow from "./AuthWindow.tsx";
+
 
 const MainDisplay = ({ places }: PlacesProps) => {
     const { isAuthenticated, logout } = useAuth();
+    type authMode = "Log In" | "Sign Up" | null;
+
+    const [authMode, setAuthMode] = useState<authMode>(null);
     
     const containerStyle: CSSProperties = {
         display: 'flex',
@@ -24,10 +30,19 @@ const MainDisplay = ({ places }: PlacesProps) => {
     };
 
     const contentStyle: CSSProperties = {
-            display: 'flex',
-            flex: 1,
-            minHeight: 0
-        };
+        display: 'flex',
+        flex: 1,
+        minHeight: 0
+    };
+
+    const buttonStyle: CSSProperties = {
+        padding: "5px",
+        width: "100px",
+        border: "2px solid #333",
+        borderRadius: "15px",
+        cursor: "pointer",
+    };
+
 
         
 
@@ -36,22 +51,36 @@ const MainDisplay = ({ places }: PlacesProps) => {
             <header style={headerStyle}>
                 {isAuthenticated ?  (
                     <>
-                        <button>Profile</button>
-                        <button onClick={logout}>Log Out</button>
+                        <button style={buttonStyle}>Profile</button>
+                        <button style={buttonStyle} onClick={logout}>Log Out</button>
 
                     </>
                 ) : (
                     <>
-                        <button>Sign Up</button>
-                        <button>Log in</button>
+                        <button style={buttonStyle} onClick={() => setAuthMode("Log In")}>
+                            Log In
+                        </button>
+
+                        <button style={buttonStyle} onClick={() => setAuthMode("Sign Up")}>
+                            Sign Up
+                        </button>
                     </>
                 )}
             </header>
+            
 
             <div style={contentStyle}>
                 <MapComponent places={places} />
                 <ListOfPlaces places={places} />
             </div>
+
+            {authMode !== null && (
+                <AuthWindow
+                    initialMode={authMode}
+                    onClose={() => setAuthMode(null)}
+                />
+            )}
+
         </div>
     );
 };
