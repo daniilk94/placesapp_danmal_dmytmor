@@ -1,14 +1,17 @@
 import ListOfPlaces from './ListOfPlaces';
 import MapComponent from './MapComponent';
 import { useAuth } from "../utils/useAuth";
-import { useState, useEffect } from 'react';
-import type { PlacesProps } from '../interfaces.ts';
+import { useState } from 'react';
+import type { PlacesProps } from '../interfaces';
 import type { CSSProperties } from 'react';
-import AuthWindow from "./AuthWindow.tsx";
+import AuthWindow from "./AuthWindow";
+import AddPlaceWindow from "./AddPlaceWindow";
+import { addPlace } from "../utils/authService";
 
 
 const MainDisplay = ({ places }: PlacesProps) => {
-    const { isAuthenticated, logout } = useAuth();
+    const { isAuthenticated, setIsAuthenticated, logout } = useAuth();
+    const [isAddPlaceOpen, setIsAddPlaceOpen] = useState(false);
     type authMode = "Log In" | "Sign Up" | null;
 
     const [authMode, setAuthMode] = useState<authMode>(null);
@@ -51,6 +54,9 @@ const MainDisplay = ({ places }: PlacesProps) => {
             <header style={headerStyle}>
                 {isAuthenticated ?  (
                     <>
+                        <button style={buttonStyle} onClick={() => setIsAddPlaceOpen(true)} >
+                            Add Place
+                        </button>
                         <button style={buttonStyle}>Profile</button>
                         <button style={buttonStyle} onClick={logout}>Log Out</button>
 
@@ -78,9 +84,27 @@ const MainDisplay = ({ places }: PlacesProps) => {
                 <AuthWindow
                     initialMode={authMode}
                     onClose={() => setAuthMode(null)}
+                    setIsAuthenticated={setIsAuthenticated}
                 />
             )}
 
+            {isAddPlaceOpen && (
+                <AddPlaceWindow
+                    onClose={() => setIsAddPlaceOpen(false)}
+                    onAddPlace={async (place) => {
+                        try {
+                            await addPlace(place);
+
+                            alert("Place added successfully!");
+
+                            setIsAddPlaceOpen(false);
+                        } catch (error) {
+                            console.error(error);
+                            alert("Failed to add place");
+                        }
+                    }}
+                />
+            )}
         </div>
     );
 };

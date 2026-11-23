@@ -1,16 +1,62 @@
 import { useState } from "react";
 import type { CSSProperties } from "react";
+import { registerUser, loginUser } from "../utils/authService";
 
 
-type authMode = "Sign Up" | "Log In";
+type AuthMode = "Sign Up" | "Log In";
 
-interface authProps {
+interface AuthProps {
     onClose: () => void;
-    initialMode: authMode;
+    initialMode: AuthMode;
+    setIsAuthenticated: (value: boolean) => void;
 }
 
-function AuthWindow({ onClose, initialMode }: authProps) {
-    const [mode, setMode] = useState<authMode>(initialMode);
+
+function AuthWindow({ onClose, initialMode, setIsAuthenticated}: AuthProps) {
+    const [mode, setMode] = useState<AuthMode>(initialMode);
+    const [name, setName] = useState("");
+    const [password, setPassword] = useState("");
+    const [confirmPassword, setConfirmPassword] = useState("");
+
+    const handleSignUp = async () => {
+        if (password !== confirmPassword) {
+            alert("Passwords do not match");
+            return;
+        }
+
+        try {
+            await registerUser({ name, password });
+
+            alert("Registration successful! You can now log in.");
+            setMode("Log In");
+
+        } catch (error) {
+            console.error(error);
+
+            if (error instanceof Error) {
+                alert(error.message);
+            }
+        }
+    };
+
+    const handleLogin = async () => {
+        try {
+            const data = await loginUser(name, password);
+
+            localStorage.setItem("token", data.Token);
+
+            setIsAuthenticated(true);
+
+            onClose();
+
+        } catch (error) {
+            console.error(error);
+
+            if (error instanceof Error) {
+                alert(error.message);
+            }
+        }
+    };
 
     const modalStyle: CSSProperties = {
         position: "fixed",
@@ -68,16 +114,37 @@ function AuthWindow({ onClose, initialMode }: authProps) {
 
                 <h2>{isLogin ? "Log In" : "Sign Up"}</h2>
 
-                <input style={inputStyle} type="name" placeholder="Name" />
-                <input style={inputStyle} type="password" placeholder="Password" />
+                <input 
+                    style={inputStyle} 
+                    type="text" 
+                    placeholder="Name"
+                    value = {name}
+                    onChange={(e) => setName(e.target.value)} 
+                />
+                
+                <input 
+                    style={inputStyle} 
+                    type="password" 
+                    placeholder="Password"
+                    value = {password}
+                    onChange={(e) => setPassword(e.target.value)} 
+                    />
 
                 {!isLogin && (
                     <input
-                        style={inputStyle} type="password" placeholder="Repeat password"
+                        style={inputStyle} 
+                        type="password" 
+                        placeholder="Confirm password"
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
                     />
                 )}
 
-                <button style={buttonStyle}>
+                <button 
+                    style={buttonStyle}
+                    type="button"
+                    onClick={isLogin ? handleLogin : handleSignUp}
+                    >
                     {isLogin ? "Log In" : "Sign Up"}
                 </button>
 
